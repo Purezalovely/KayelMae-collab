@@ -1,0 +1,175 @@
+
+body {
+    background-color: #f8f9fa;
+}
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 30px;
+}
+.card {
+    width: 300px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+.profile-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 10px auto;
+    border: 3px solid #007bff;
+}
+.card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #343a40;
+}
+.card-text {
+    color: #6c757d;
+}
+.btn {
+    margin: 5px;
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 0 auto;
+    margin-top: 100px;
+    height: auto;
+    padding: 20px;  
+  }
+
+  .error-input {
+    border: 1px solid red !important;
+}
+
+.form-label {
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+  }
+  
+  .form-control {
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+  }
+
+  .login-heading {
+    font-family: "Roboto", sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    color: #333; /* Adjust the color as per your design */
+  }
+
+  .form-section {
+    display: none;
+  }
+  .current-section {
+    display: block;
+    max-width: 400px;
+    margin: 0 auto;
+    margin-top: 100px;
+    height: auto;
+    padding: 20px;  
+    
+  }
+.custom-container{
+  margin-top: 100px;
+  width: 500px;
+  
+}
+
+/* /user information stylesheet */
+
+.user-info {
+  margin: 0 auto;
+  margin-top: 100px;
+  height: auto;
+  padding: 20px; 
+
+}
+.list-group-item-icon {
+  margin-right: 10px;
+}
+.list-group-item-success {
+  background-color: #d4edda !important;
+}
+.list-group-item-danger {
+  background-color: #f8d7da !important;
+}
+
+.custom-container{
+  width: 800px;
+}
+body{
+font-family: 'Roboto', sans-serif;
+}
+/* Style the sidebar */
+.sidebar {
+  height: 100%;
+  width: 250px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #333;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.sidebar .user-info {
+  padding: 20px;
+  background-color: #333;
+  color: #fff;
+}
+
+.sidebar a {
+  padding: 10px 20px;
+  text-decoration: none;
+  font-size: 18px;
+  color: #fff;
+  display: block;
+}
+
+.sidebar a:hover {
+  background-color: #444;
+  color: #fff;
+}
+
+.sidebar.active {
+  background-color: #444;
+  color: #fff;
+}
+
+/* Style the main content area */
+.main-content {
+  margin-left: 250px;
+  padding: 20px;
+}
+
+/* On smaller screens, make the sidebar collapsible */
+@media screen and (max-width: 768px) {
+ .sidebar {
+    width: 100px;
+  }
+ .sidebar .user-info {
+    display: none;
+  }
+ .sidebar a {
+    text-align: center;
+    padding: 10px;
+  }
+ .main-content {
+    margin-left: 100px;
+  }
+}
+
