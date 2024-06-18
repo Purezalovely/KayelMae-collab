@@ -32,9 +32,9 @@ if (isset($_POST['delete'])) {
 </head>
 <body>
 
-<?php include('navbar.php'); ?>
+<?php include('sidebar.php'); ?>
 
-<div class="container user-info rounded shadow p-3 my-2">
+<div class="container user-info rounded shadow p-3 my-2" style="margin-left: 250px;">
     <h2 class="text-center mb-2"> Tenant List</h2>
     <div class="table-responsive">
         <table class="table table-bordered">
@@ -44,19 +44,19 @@ if (isset($_POST['delete'])) {
                     <th>Picture</th>
                     <th>Tenant FN</th>
                     <th>Tenant LN</th>
-                    <th>Birthday</th>
                     <th>Sex</th>
                     <th>Username</th>
-                    <th>Address</th>
+                    <th>apartment_id</th>
                     <th>Payment</th>
-                    <th>Unit Type</th>
+                    <th>lease_id</th>
                     <th>Age</th>
                     <th>Edit</th>
                 </tr>
             </thead>
             <tbody>
             <?php
-            $counter = 1;
+
+$counter = 1;
             $data = $con->view();
             foreach ($data as $rows) {
                 ?>
@@ -71,23 +71,22 @@ if (isset($_POST['delete'])) {
                     </td>
                     <td><?php echo $rows['tenant_firstname']; ?></td>
                     <td><?php echo $rows['tenant_lastname']; ?></td>
-                    <td><?php echo $rows['birthday']; ?></td>
                     <td><?php echo $rows['sex']; ?></td>
                     <td><?php echo $rows['Username']; ?></td>
-                    <td><?php echo ucwords($rows['address']); ?></td>
+                    <td><?php echo ucwords($rows['apartment_id']); ?></td>
                     <td><?php echo $rows['payment']; ?></td>
-                    <td><?php echo $rows['unit_type']; ?></td>
+                    <td><?php echo $rows['lease_id']; ?></td>
                     <td><?php echo $rows['age']; ?></td>
                     <td>
                         <div class="btn-group" role="group">
                             <form action="update.php" method="post" class="d-inline">
-                                <input type="hidden" name="id" value="<?php echo $rows['UserID']; ?>">
+                                <input type="hidden" name="id" value="<?php echo $rows['tenant_id']; ?>">
                                 <button type="submit" class="btn btn-warning btn-sm">
                                     <i class="fas fa-edit"></i>
                                 </button>
                             </form>
                             <form method="POST" class="d-inline">
-                                <input type="hidden" name="id" value="<?php echo $rows['UserID']; ?>">
+                                <input type="hidden" name="id" value="<?php echo $rows['tenant_id']; ?>">
                                 <button type="submit" name="delete" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this user?')">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
@@ -97,6 +96,14 @@ if (isset($_POST['delete'])) {
                 </tr>
             <?php
             }
+            ?>
+            </tbody>
+        </table>
+    </div>
+
+    </div>
+
+          
             ?>
             </tbody>
         </table>
@@ -162,6 +169,3 @@ window.onload = function() {
 <!-- For Charts -->
 <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
 <script src="package/dist/sweetalert2.js"></script>
-
-<!-- Pop Up Messages after a succesful transaction starts here -->
-<script

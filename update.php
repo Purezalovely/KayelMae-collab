@@ -2,30 +2,28 @@
 require_once('classes/database.php');
 $con = new database();
 session_start();
- 
-if (!isset($_POST['id']) || empty($_POST['id'])) {
+
+if (!isset($_POST['tenant_id']) || empty($_POST['tenant_id'])) {
     header('location:index.php');
     exit();
 }
- 
-$id = $_POST['id'];
-$data = $con->viewdata($id);
- 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update'])) {
-    // Check if all fields are set
 
+$id = $_POST['tenant_id'];
+$data = $con->viewdata($id);
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update'])) {
     // Handle file upload
     $target_dir = "uploads/";
     $original_file_name = basename($_FILES["profile_picture"]["name"]);
     $new_file_name = $original_file_name;
-    $target_file = $target_dir. $original_file_name;
+    $target_file = $target_dir . $original_file_name;
     $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
     $uploadOk = 1;
 
     // Check if file already exists and rename if necessary
     if (file_exists($target_file)) {
-        $new_file_name = pathinfo($original_file_name, PATHINFO_FILENAME). '_'. time(). '.'. $imageFileType;
-        $target_file = $target_dir. $new_file_name;
+        $new_file_name = pathinfo($original_file_name, PATHINFO_FILENAME) . '_' . time() . '.' . $imageFileType;
+        $target_file = $target_dir . $new_file_name;
     }
 
     // Check if file is an actual image or fake image
@@ -42,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update'])) {
     }
 
     // Allow certain file formats
-    if ($imageFileType!= "jpg" && $imageFileType!= "png" && $imageFileType!= "jpeg" && $imageFileType!= "gif") {
+    if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
         echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
         $uploadOk = 0;
     }
@@ -52,45 +50,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update'])) {
         echo "Sorry, your file was not uploaded.";
     } else {
         if (move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $target_file)) {
-            echo "The file ". htmlspecialchars($new_file_name). " has been uploaded.";
+            echo "The file " . htmlspecialchars($new_file_name) . " has been uploaded.";
 
             // Save the user data and the path to the profile picture in the database
-            $profile_picture_path = 'uploads/'. $new_file_name;
-            $user_id = $con->updateUser($user_id, $firstname, $lastname, $birthday, $sex, $username, $password, $profile_picture_path);
+            $profile_picture_path = 'uploads/' . $new_file_name;
+            $con->updateUserProfilePicture($id, $profile_picture_path);
         }
     }
-}
 
     if (
-        isset($_POST['firstname'], $_POST['lastname'], $_POST['birthday'], $_POST['sex'],
-        $_POST['user'], $_POST['pass'], $_POST['c_pass'], $_POST['street'],
-        $_POST['barangay'], $_POST['city'], $_POST['province'])
+        isset($_POST['TenantFN'], $_POST['TenantLN'], $_POST['sex'],
+        $_POST['tenant'], $_POST['pass'], $_POST['c_pass'], $_POST['Roomno'],
+        $_POST['floor'], $_POST['numBedrooms'], $_POST['numBathrooms'])
     ) {
         // User information
-        $firstname = $_POST['firstname'];
-        $lastname = $_POST['lastname'];
-        $birthday = $_POST['birthday'];
+        $Tenantfirstname = $_POST['TenantFN'];
+        $Tenantlastname = $_POST['TenantLN'];
         $sex = $_POST['sex'];
-        $username = $_POST['user'];
+        $username = $_POST['username'];
         $password = $_POST['pass'];
         $confirm = $_POST['c_pass'];
  
         // Address information
-        $street = $_POST['street'];
-        $barangay = $_POST['barangay'];
-        $city = $_POST['city'];
-        $province = $_POST['province'];
-        $user_id = $_POST['id'];
+        $Roomno = $_POST['Roomno'];
+        $floor = $_POST['floor'];
+        $numBedrooms = $_POST['numBedrooms'];
+        $numBathrooms = $_POST['numBathrooms'];
+        $tenant_id = $_POST['tenant_id'];
 
         
  
         if (1 === 1) {
           
             // Update user information
-            if ($con->updateUser($user_id, $firstname, $lastname, $birthday, $sex, $username, $password)) {
+            if ($con->updatetenants($user_id, $firstname, $lastname, $sex, $username, $password)) {
              
                 // Update user address
-                if ($con->updateUserAddress($user_id, $street, $barangay, $city, $province)) {
+                if ($con->updateapartments($user_id, $street, $barangay, $city, $province)) {
                     // Both updates successful, redirect to a success page or display a success message
                     header('location:index.php');
                     exit();

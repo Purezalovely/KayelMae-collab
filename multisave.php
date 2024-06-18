@@ -6,9 +6,8 @@ require_once('classes/database.php');
 
 $con = new database();
 if (isset($_POST['multisave'])) {
-    $firstname = $_POST['firstname'];
-    $lastname = $_POST['lastname'];
-    $birthday = $_POST['birthday'];
+  $Tenantfirstname = $_POST['TenantFN'];
+  $Tenantlastname = $_POST['TenantLN'];
     $sex = $_POST['sex'];
     $username = $_POST['username'];
     $password = $_POST['password'];
@@ -16,19 +15,19 @@ if (isset($_POST['multisave'])) {
 
   //
     
-    $street = $_POST['user_add_street'];
-    $barangay = $_POST['user_add_barangay'];
-    $city = $_POST['user_add_city'];
-    $province = $_POST['user_add_province'];
+  $Roomno = $_POST['Roomno'];
+  $floor = $_POST['floor'];
+  $numBedrooms = $_POST['numBedrooms'];
+  $numBathrooms = $_POST['numBathrooms'];
     
 
     
     if ($password == $confirm) {
         // Passwords match, proceed with signup
-        $user_id = $con->signup($firstname, $lastname, $birthday, $username, $password,$sex); // Insert into users table and get user_id
-        if ($user_id) {
+        $tenant_id = $con->signup($Tenantfirstname,  $Tenantlastname, $username, $password,$sex); // Insert into users table and get user_id
+        if ($tenant_id) {
             // Signup successful, insert address into users_address table
-            if ($con->insertAddress($user_id, $street, $barangay, $city, $province)) {
+            if ($con->insertAddress($tenant_id, $Roomno, $floor,  $numBedrooms,   $numBathrooms)) {
                 // Address insertion successful, redirect to login page
                 header('location:login.php');
                 exit();
@@ -75,24 +74,25 @@ if (isset($_POST['multisave'])) {
   <h3 class="text-center mt-4"> Registration Form</h3>
   <form method="post" action="multisave.php">
     <!-- Personal Information -->
-    <div class="card mt-4">
-      <div class="card-header bg-info text-white">Personal Information</div>
-      <div class="card-body">
+    <div class="form-step" id="step-2">
+      <div class="card mt-4">
+        <div class="card-header bg-info text-white">Personal Information</div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="TenantFN">First Name:</label>
+              <input type="text" class="form-control" name="TenantFN" placeholder="Enter first name" required>
+              <div class="valid-feedback">Looks good!</div>
+              <div class="invalid-feedback">Please enter a valid first name.</div>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="TenantLN">Last Name:</label>
+              <input type="text" class="form-control" name="TenantLN" placeholder="Enter last name" required>
+              <div class="valid-feedback">Looks good!</div>
+              <div class="invalid-feedback">Please enter a valid last name.</div>
+            </div>
+          </div>
         <div class="form-row">
-          <div class="form-group col-md-6 col-sm-12">
-            <label for="firstName">First Name:</label>
-            <input type="text" class="form-control" name="firstname"  placeholder="Enter first name">
-          </div>
-          <div class="form-group col-md-6 col-sm-12">
-            <label for="lastName">Last Name:</label>
-            <input type="text" class="form-control" name="lastname"  placeholder="Enter last name">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group col-md-6">
-            <label for="birthday">Birthday:</label>
-            <input type="date" class="form-control" name="birthday" >
-          </div>
           <div class="form-group col-md-6">
             <label for="sex">Sex:</label>
             <select class="form-control" name="sex" >
@@ -118,29 +118,36 @@ if (isset($_POST['multisave'])) {
     </div>
     
     <!-- Address Information -->
-    <div class="card mt-4">
-      <div class="card-header bg-info text-white">Address Information</div>
-      <div class="card-body">
-        <div class="form-group">
-          <label for="street">Street:</label>
-          <input type="text" class="form-control" name="user_add_street"  placeholder="Enter street">
-        </div>
-        <div class="form-row">
-          <div class="form-group col-md-6">
-            <label for="barangay">Barangay:</label>
-            <input type="text" class="form-control" name="user_add_barangay"  placeholder="Enter barangay">
-          </div>
-          <div class="form-group col-md-6">
-            <label for="city">City:</label>
-            <input type="text" class="form-control" name="user_add_city"  placeholder="Enter city">
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="province">Province:</label>
-          <input type="text" class="form-control" name="user_add_province"  placeholder="Enter province">
-        </div>
+    <div class="form-step" id="step-3">
+  <div class="card mt-4">
+    <div class="card-header bg-info text-white">Address Information</div>
+    <div class="card-body">
+      <div class="form-group">
+        <label for="Roomno">Room Number:</label>
+        <input type="text" class="form-control" name="Roomno" id="Roomno" placeholder="Enter room number" required>
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">Please enter the room number.</div>
+      </div>
+      <div class="form-group">
+        <label for="floor">Floor:</label>
+        <input type="text" class="form-control" name="floor" id="floor" placeholder="Enter floor" required>
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">Please enter the floor number.</div>
+      </div>
+      <div class="form-group">
+        <label for="numBedrooms">Number of Bedrooms:</label>
+        <input type="number" class="form-control" name="numBedrooms" id="numBedrooms" placeholder="Enter number of bedrooms" required>
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">Please enter the number of bedrooms.</div>
+      </div>
+      <div class="form-group">
+        <label for="numBathrooms">Number of Bathrooms:</label>
+        <input type="number" class="form-control" name="numBathrooms" id="numBathrooms" placeholder="Enter number of bathrooms" required>
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">Please enter the number of bathrooms.</div>
       </div>
     </div>
+  </div>
     
     <!-- Submit Button -->
     

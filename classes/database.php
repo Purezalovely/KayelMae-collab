@@ -1,236 +1,124 @@
 <?php
- 
-class database{
- 
-    function opencon(){
-        return new PDO('mysql:host=localhost; dbname=loginmethod', 'root', '');
-    }
-    // function check($username, $password){
-    //     $con = $this->opencon();
-    //     $query = "SELECT * from users WHERE username='".$username."'&&password='".$password."'                ";
-    //     return $con->query($query)->fetch();
-    // }
+class Database {
+    private $pdo;
 
-    function check($username, $password) {
-        // Open database connection
-        $con = $this->opencon();
-    
-        // Prepare the SQL query
-        $query = $con->prepare("SELECT * FROM users WHERE username = ?");
-        $query->execute([$username]);
-    
-        // Fetch the user data as an associative array
-        $user = $query->fetch(PDO::FETCH_ASSOC);
-    
-        // If a user is found, verify the password
-        if ($user && password_verify($password, $user['password'])) {
-            return $user;
-        }
-    
-        // If no user is found or password is incorrect, return false
-        return false;
-    }
+    public function __construct() {
+        $dsn = 'mysql:host=localhost;dbname=wilesdb;charset=utf8mb4';
+        $username = 'username';  // Update with your database username
+        $password = 'password';  // Update with your database password
 
-    function validateCurrentPassword($userId, $currentPassword) {
-        // Open database connection
-        $con = $this->opencon();
-    
-        // Prepare the SQL query
-        $query = $con->prepare("SELECT password FROM users WHERE user_id = ?");
-        $query->execute([$userId]);
-    
-        // Fetch the user data as an associative array
-        $user = $query->fetch(PDO::FETCH_ASSOC);
-    
-        // If a user is found, verify the password
-        if ($user && password_verify($currentPassword, $user['password'])) {
-            return true;
-        }
-    
-        // If no user is found or password is incorrect, return false
-        return false;
-    }
-    function updatePassword($userId, $hashedPassword){
-    try {
-        $con = $this->opencon();
-        $con->beginTransaction();
-        $query = $con->prepare("UPDATE users SET password = ? WHERE user_id = ?");
-        $query->execute([$hashedPassword, $userId]);
-        // Update successful
-        $con->commit();
-        return true;
-    } catch (PDOException $e) {
-        // Handle the exception (e.g., log error, return false, etc.)
-         $con->rollBack();
-        return false; // Update failed
-    }
-    }
-    
-     function updateUserProfilePicture($userID, $profilePicturePath) {
-    try {
-        $con = $this->opencon();
-        $con->beginTransaction();
-        $query = $con->prepare("UPDATE users SET profile_picture = ? WHERE user_id = ?");
-        $query->execute([$profilePicturePath, $userID]);
-        // Update successful
-        $con->commit();
-        return true;
-    } catch (PDOException $e) {
-        // Handle the exception (e.g., log error, return false, etc.)
-         $con->rollBack();
-        return false; // Update failed
-    }
-     }
-
-    function view ()
-         {
-            $con = $this->opencon();
-            return $con->query("SELECT  users.user_id,users.username,users.password,users.firstname,users.lastname,users.birthday,users.user_email, users.sex,users.profile_picture, CONCAT (user_address.user_add_id, user_address.user_id,user_address.user_add_street,' ',user_address.user_add_barangay,' ',user_address.user_add_city,'',user_address.user_add_province) AS address From users JOIN user_address ON users.user_id=user_address.user_id")->fetchAll();
-         }
-
-    function delete($id)
-    {
-        try{
-        $con = $this->opencon();
-        $con->beginTransaction();
-
-        //Delete user Address
-        $query = $con->prepare("DELETE FROM user_address WHERE user_id = ?");
-        $query->execute([$id]);
-
-        //Delete user
-        $query2 = $con->prepare("DELETE FROM users WHERE user_id = ?");
-        $query2->execute([$id]);
-
-        $con->commit();
-        return true; // Deletion Successful
-        } catch (PDOException $e) {
-            $con->rollback();
-            return false;
-        }
-        }
-    
-
-    function signup($firstname, $lastname, $birthday, $username, $password, $sex){
-        $con = $this->opencon();
-   
-        $query = $con->prepare("SELECT username FROM users WHERE username = ?");
-        $query->execute([$username]);
-        $existingUser = $query->fetch();
-        if ($existingUser){
-            return false; // Username already exists
-        }
-   
-        $query = $con->prepare("INSERT INTO users (username, password, firstname, lastname, birthday, sex) VALUES (?, ?, ?, ?, ?,?)");
-        return $query->execute([$username, $password, $firstname, $lastname, $birthday,$sex]);
-    }
-
-           
-
-    function signupUser($firstname, $lastname, $birthday, $sex, $email, $username, $password, $profilePicture)
-             {
-                 $con = $this->opencon();
-                 // Save user data along with profile picture path to the database
-                 $con->prepare("INSERT INTO users (firstname, lastname, birthday, sex, user_email, username, password, profile_picture) VALUES (?,?,?,?,?,?,?,?)")->execute([$firstname, $lastname, $birthday, $sex, $email, $username, $password, $profilePicture]);
-                 return $con->lastInsertId();
-                 }
-             
-    function insertAddress($user_id, $city, $province, $street, $barangay) {
-        $con = $this->opencon();
-        return $con->prepare("INSERT INTO user_address (user_id, user_add_street,user_add_barangay, user_add_city, user_add_province) VALUES (?, ?, ?, ?, ?)")
-            ->execute([$user_id, $city, $province, $street, $barangay]);
-    }
-   
-    function viewdata($id) {
         try {
-            $con = $this->opencon();
-            $query = $con->prepare("SELECT
-            users.user_id,
-            users.username,
-            users.user_email,
-            users.profile_picture,
-            users.password,
-            users.firstname,
-            users.lastname,
-            users.birthday,
-            users.sex,
-                user_address.user_add_id,
-                user_address.user_id,
-                user_address.user_add_street,
-                user_address.user_add_barangay,
-                user_address.user_add_city,
-                user_address.user_add_province
-        FROM
-            users
-        JOIN user_address ON users.user_id = user_address.user_id WHERE users.user_id = ?");
-            $query->execute([$id]);
-            return $query->fetch();
+            $this->pdo = new PDO($dsn, $username, $password);
+            // Set error mode to exception
+            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            return[];
+            die("Connection failed: " . $e->getMessage());
         }
     }
 
-    function updateUser($user_id, $firstname, $lastname, $birthday, $sex, $username, $password) {
-        try {
-            $con = $this->opencon();
-            $con->beginTransaction();
-            $query = $con->prepare("UPDATE users SET firstname=?, lastname=?, birthday=?, sex=?, username=?, password=? WHERE user_id=?");
-            $query->execute([$firstname, $lastname, $birthday, $sex, $username, $password, $user_id]);
-            //Update Successful
-            $con->commit();
-            return true;
-        } catch (PDOException $e) {
-            // Handle the exception
-            $con->rollBack();
-            return false;
-        }
-    }
-    
-    function updateUserAddress($user_id, $street, $barangay, $city, $province) {
-        try {
-            $con = $this->opencon();
-            $con->beginTransaction();
-            $query = $con->prepare("UPDATE user_address SET user_add_street=?, user_add_barangay=?, user_add_city=?, user_add_province=? WHERE user_id=?");
-            $query->execute([$street, $barangay, $city, $province, $user_id]);
-            //Update Successful
-            $con->commit();
-            return true;
-        } catch (PDOException $e) {
-            // Handle the exception
-            $con->rollBack();
-            return false;
-        }
+
+    // Define the viewdata method for apartments
+    public function viewdata($apartment_id) {
+        $stmt = $this->pdo->prepare("SELECT apartment_id, Roomno, floor, num_bedrooms, num_bathrooms, rent, created_at FROM apartments WHERE apartment_id = ?");
+        $stmt->execute([$apartment_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    function fetchAvailableCourses($userId) {
+    // Define the updateApartmentDetails method
+    public function updateApartmentDetails($apartment_id, $Roomno, $floor, $num_bedrooms, $num_bathrooms, $rent) {
+        $stmt = $this->pdo->prepare("UPDATE apartments SET Roomno = ?,  floor = ?, num_bedrooms = ?, num_bathrooms = ?, rent = ? WHERE apartment_id = ?");
+        return $stmt->execute([$Roomno, $floor, $num_bedrooms, $num_bathrooms, $rent, $apartment_id]);
+    }
+
+    public function __destruct() {
+        $this->pdo = null;
+    }
+
+    public function view() {
         try {
-            $con = $this->opencon();
-            $query = $con->prepare("
-                SELECT c.course_id, c.course_name, c.course_description,
-                CASE WHEN e.course_id IS NOT NULL THEN 'Enrolled' ELSE 'Not Enrolled' END AS enrolled_status
-                FROM courses c
-                LEFT JOIN enrollments e ON c.course_id = e.course_id AND e.user_id = ?
-                WHERE e.course_id IS NULL OR e.user_id != ?
-            ");
-            $query->execute([$userId, $userId]);
-            return $query->fetchAll(PDO::FETCH_ASSOC);
+            $stmt = $this->pdo->query("SELECT tenant_id, `Tenant FN`, `Tenant LN`, phone, lease_id, sex, username, email,  apartment_id, age FROM tenants");
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            // Handle the exception (e.g., log error, return false, etc.)
+            echo "Error: " . $e->getMessage();
             return [];
         }
     }
-    
-     function fetchSelectedCourses($selectedCourseIds) {
+
+     // Function to view tenant profile
+    public function viewTenantProfile($tenantId) {
+        $stmt = $this->pdo->prepare("SELECT tenant_id, Tenant FN, Tenant LN,  username, email,  phone, lease_id FROM tenants WHERE tenant_id = ?");
+        $stmt->execute([$tenantId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Function to delete tenant
+    public function deleteTenant($tenantId) {
         try {
-            $con = $this->opencon();
-            $placeholders = str_repeat('?,', count($selectedCourseIds) - 1) . '?';
-            $query = $con->prepare("SELECT course_id, course_name, course_description FROM courses WHERE course_id IN ($placeholders)");
-            $query->execute($selectedCourseIds);
-            return $query->fetchAll(PDO::FETCH_ASSOC);
+            $this->pdo->beginTransaction();
+            $stmt = $this->pdo->prepare("DELETE FROM tenants WHERE tenant_id = ?");
+            $stmt->execute([$tenantId]);
+            $this->pdo->commit();
+            return true;
         } catch (PDOException $e) {
-            // Handle the exception (e.g., log error, return false, etc.)
-            return [];
+            $this->pdo->rollback();
+            return false;
         }
     }
- 
+
+    // Function to add apartment
+    public function addApartment($Roomno, $floor, $numBedrooms, $numBathrooms, $rent) {
+        try {
+            $this->pdo->beginTransaction();
+            $stmt = $this->pdo->prepare("INSERT INTO apartments (Room.no, floor, num_bedrooms, num_bathrooms, rent) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$Roomno, $floor, $numBedrooms, $numBathrooms, $rent]);
+            $this->pdo->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->pdo->rollback();
+            return false;
+        }
+    }
+
+    // Function to add lease
+    public function addLease($tenantId, $apartmentId, $startDate, $endDate, $rent) {
+        try {
+            $this->pdo->beginTransaction();
+            $stmt = $this->pdo->prepare("INSERT INTO leases (tenant_id, apartment_id, start_date, end_date, rent) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$tenantId, $apartmentId, $startDate, $endDate, $rent]);
+            $this->pdo->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->pdo->rollback();
+            return false;
+        }
+    }
+
+    // Function to add maintenance request
+    public function addMaintenanceRequest($tenantId, $apartmentId, $requestDate, $description) {
+        try {
+            $this->pdo->beginTransaction();
+            $stmt = $this->pdo->prepare("INSERT INTO maintenance_requests (tenant_id, apartment_id, request_date, description) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$tenantId, $apartmentId, $requestDate, $description]);
+            $this->pdo->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->pdo->rollback();
+            return false;
+        }
+    }
+
+    // Function to add payment
+    public function addPayment($leaseId, $amount, $paymentDate) {
+        try {
+            $this->pdo->beginTransaction();
+            $stmt = $this->pdo->prepare("INSERT INTO payments (lease_id, amount, payment_date) VALUES (?, ?, ?)");
+            $stmt->execute([$leaseId, $amount, $paymentDate]);
+            $this->pdo->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->pdo->rollback();
+            return false;
+        }
+    }
 }
+?>

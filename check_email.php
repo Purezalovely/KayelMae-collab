@@ -5,7 +5,7 @@ if (isset($_POST['email'])) {
     $email = $_POST['email']; 
     $con = new database();
 
-    $query = $con->opencon()->prepare("SELECT user_email FROM users WHERE user_email = ?");
+    $query = $con->opencon()->prepare("SELECT email FROM tenants WHERE email = ?");
     $query->execute([$email]);
     $existingUser = $query->fetch();
 

@@ -19,23 +19,22 @@ try {
     $query->execute();
     $users = $query->fetchAll(PDO::FETCH_ASSOC);
 
-    foreach ($users as $user) {
+    foreach ($tenants as $tenants) {
         $html .= '<tr>';
-        $html .= '<td>' . $user['user_id'] . '</td>';
-        $html .= '<td><img src="' . htmlspecialchars($user['user_profile_picture']) . '" alt="Profile Picture" style="width: 50px; height: 50px; border-radius: 50%;"></td>';
-        $html .= '<td>' . $user['user_firstname'] . '</td>';
-        $html .= '<td>' . $user['user_lastname'] . '</td>';
-        $html .= '<td>' . $user['user_birthday'] . '</td>';
-        $html .= '<td>' . $user['user_sex'] . '</td>';
-        $html .= '<td>' . $user['user_name'] . '</td>';
-        $html .= '<td>' . $user['address'] . '</td>';
+        $html .= '<td>' . $tenants['tenant_id'] . '</td>';
+        $html .= '<td><img src="' . htmlspecialchars($tenants['profile_picture']) . '" alt="Profile Picture" style="width: 50px; height: 50px; border-radius: 50%;"></td>';
+        $html .= '<td>' . $tenants['firstname'] . '</td>';
+        $html .= '<td>' . $tenants['lastname'] . '</td>';
+        $html .= '<td>' . $tenants['sex'] . '</td>';
+        $html .= '<td>' . $tenants['username'] . '</td>';
+        $html .= '<td>' . $tenants['address'] . '</td>';
         $html .= '<td>'; // Action column
         $html .= '<form action="update.php" method="post" style="display: inline;">';
-        $html .= '<input type="hidden" name="id" value="' . $user['user_id'] . '">';
+        $html .= '<input type="hidden" name="id" value="' .$tenants['tenant_id'] . '">';
         $html .= '<button type="submit" class="btn btn-primary btn-sm">Edit</button>';
         $html .= '</form>';
         $html .= '<form method="POST" style="display: inline;">';
-        $html .= '<input type="hidden" name="id" value="' . $user['user_id'] . '">';
+        $html .= '<input type="hidden" name="id" value="' . $tenants['tenant_id'] . '">';
         $html .= '<input type="submit" name="delete" class="btn btn-danger btn-sm" value="Delete" onclick="return confirm(\'Are you sure you want to delete this user?\')">';
         $html .= '</form>';
         $html .= '</td>';
@@ -64,7 +63,7 @@ try {
 <body>
 <?php include('navbar.php'); ?>
 <div class="container user-info rounded shadow p-3 my-5">
-    <h2 class="text-center mb-2">User Table</h2>
+    <h2 class="text-center mb-2">Tenant's Table</h2>
     <!-- Search input -->
     <div class="mb-3">
         <input type="text" id="search" class="form-control" placeholder="Search users...">
@@ -73,14 +72,13 @@ try {
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>User_ID</th>
+                    <th>Tenant_ID</th>
                     <th>Picture</th>
                     <th>First Name</th>
                     <th>Last Name</th>
-                    <th>Birthday</th>
                     <th>Sex</th>
                     <th>Username</th>
-                    <th>Address</th>
+                    <th>Apartment</th>
                     <th>Actions</th>
                 </tr>
             </thead>

@@ -1,52 +1,41 @@
 <?php
-// session_start();
-// if (empty($_SESSION['username'])) {
-//     header('location:login.php');
-// }
-require_once('classes/database.php');
-$con = new database();
+require_once('classes/database.php'); // Include your database class
+$con = new database(); // Assuming your database class is instantiated
+
 $error = "";
+
 if (isset($_POST['multisave'])) {
-    
     // Getting the account information
     $username = $_POST['username'];
-    $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
-    
-    // Getting the personal information
-    $firstname = $_POST['firstname'];
-    $lastname = $_POST['lastname'];
-    $birthday = $_POST['birthday'];
-    $sex = $_POST['sex'];
-  
-    // Getting the address information
-    $street = $_POST['user_street'];
-    $barangay = $_POST['barangay_text'];
-    $city = $_POST['city_text'];
-    $province = $_POST['region_text'];
+    $email = $_POST['email']; // If you're collecting email, add it here
 
-   // Handle file upload
-   $target_dir = "uploads/";
-   $original_file_name = basename($_FILES["profile_picture"]["name"]);
-   
-   // NEW CODE: Initialize $new_file_name with $original_file_name
-    $new_file_name = $original_file_name; 
-   
-   
+    // Getting the personal information
+    $Tenantfirstname = $_POST['TenantFN'];
+    $Tenantlastname = $_POST['TenantLN'];
+    $sex = $_POST['sex'];
+
+    // Getting the address information
+    $Roomno = $_POST['Roomno'];
+    $floor = $_POST['floor'];
+    $numBedrooms = $_POST['numBedrooms'];
+    $numBathrooms = $_POST['numBathrooms'];
+
+    // Handle file upload
+    $target_dir = "uploads/";
+    $original_file_name = basename($_FILES["profile_picture"]["name"]);
+    $new_file_name = $original_file_name; // Initialize $new_file_name with $original_file_name
+
     $target_file = $target_dir . $original_file_name;
     $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
     $uploadOk = 1;
-   
-   // Check if file already exists and rename if necessary
- // Check if file already exists and rename if necessary
- if (file_exists($target_file)) {
-   // Generate a unique file name by appending a timestamp
-   $new_file_name = pathinfo($original_file_name, PATHINFO_FILENAME) . '_' . time() . '.' . $imageFileType;
-   $target_file = $target_dir . $new_file_name;
- } else {
-   // Update $target_file with the original file name
-   $target_file = $target_dir . $original_file_name;
-}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+
+    // Check if file already exists and rename if necessary
+    if (file_exists($target_file)) {
+        // Generate a unique file name by appending a timestamp
+        $new_file_name = pathinfo($original_file_name, PATHINFO_FILENAME) . '_' . time() . '.' . $imageFileType;
+        $target_file = $target_dir . $new_file_name;
+    }
+
     // Check if file is an actual image or fake image
     $check = getimagesize($_FILES["profile_picture"]["tmp_name"]);
     if ($check === false) {
@@ -74,15 +63,16 @@ if (isset($_POST['multisave'])) {
             echo "The file " . htmlspecialchars($new_file_name) . " has been uploaded.";
 
             // Save the user data and the path to the profile picture in the database
-            $profile_picture_path = 'uploads/'.$new_file_name; // Save the new file name (without directory)
-            
-            $user_id = $con->signupUser($firstname, $lastname, $birthday, $sex, $email, $username, $password, $profile_picture_path);
+            $profile_picture_path = 'uploads/' . $new_file_name; // Save the new file name (without directory)
 
-            if ($user_id) {
-                // Signup successful, insert address into users_address table
-                if ($con->insertAddress($user_id, $street, $barangay, $city, $province)) {
-                    // Address insertion successful, redirect to login page
-                    header('location:index.php');
+            // Assuming signupTenant and insertTenantAddress methods are defined in your database class
+            $tenant_id = $con->signupTenant($Tenantfirstname, $Tenantlastname, $sex, $username, $profile_picture_path, $email);
+
+            if ($tenant_id) {
+                // Signup successful, insert address into tenants_address table (assuming it's different from users_address)
+                if ($con->insertTenantAddress($tenant_id, $Roomno, $floor, $numBedrooms, $numBathrooms)) {
+                    // Address insertion successful, redirect to success page
+                    header('location: registration_success.php');
                     exit; // Stop further execution
                 } else {
                     // Address insertion failed, display error message
@@ -100,8 +90,6 @@ if (isset($_POST['multisave'])) {
 }
 ?>
 
-
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -109,11 +97,10 @@ if (isset($_POST['multisave'])) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="./bootstrap-4.5.3-dist/css/bootstrap.css">
   <link rel="stylesheet" href="./bootstrap-5.3.3-dist/css/bootstrap.css">
   <!-- JQuery for Address Selector -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <title>Form with MultiStep and Address Selector</title>
+  <title>Tenant's Form</title>
   <style>
     .form-step {
       display: none;
@@ -124,6 +111,7 @@ if (isset($_POST['multisave'])) {
   </style>
 </head>
 <body>
+
 <div class="container custom-container rounded-3 shadow my-5 p-3 px-5">
   <h3 class="text-center mt-4">Registration Form</h3>
   <form id="registration-form" method="post" action="" enctype="multipart/form-data" novalidate>
@@ -132,20 +120,19 @@ if (isset($_POST['multisave'])) {
       <div class="card mt-4">
         <div class="card-header bg-info text-white">Account Information</div>
         <div class="card-body">
-        <div class="form-group">
+          <div class="form-group">
             <label for="username">Username:</label>
             <input type="text" class="form-control" name="username" id="username" placeholder="Enter username" required>
             <div class="valid-feedback">Looks good!</div>
             <div class="invalid-feedback">Please enter a valid username.</div>
-            <div id="usernameFeedback" class="invalid-feedback"></div> <!-- New feedback div -->
-        </div>
+            <div id="usernameFeedback" class="invalid-feedback"></div>
+          </div>
           <div class="form-group">
             <label for="email">Email:</label>
             <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
             <div class="valid-feedback">Looks good!</div>
             <div class="invalid-feedback">Please enter a valid email.</div>
-            <div id="emailFeedback" class="invalid-feedback"></div> <!-- New feedback div -->
-
+            <div id="emailFeedback" class="invalid-feedback"></div>
           </div>
           <div class="form-group">
             <label for="password">Password:</label>
@@ -153,7 +140,6 @@ if (isset($_POST['multisave'])) {
             <div class="valid-feedback">Looks good!</div>
             <div class="invalid-feedback">Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character.</div>
           </div>
-
           <div class="form-group">
             <label for="confirmPassword">Confirm Password:</label>
             <input type="password" class="form-control" name="confirmPassword" placeholder="Re-enter your password" required>
@@ -164,108 +150,83 @@ if (isset($_POST['multisave'])) {
       </div>
       <button type="button" id="nextButton" class="btn btn-primary mt-3" onclick="nextStep()">Next</button>
     </div>
-<!-- Step 2 -->
+
+    <!-- Step 2 -->
     <div class="form-step" id="step-2">
-          <!-- Step 2: Personal Information -->
-          <div class="card mt-4">
-            <div class="card-header bg-info text-white">Personal Information</div>
-            <div class="card-body">
-              <div class="form-row">
-                <div class="form-group col-md-6 col-sm-12">
-                  <label for="firstName">First Name:</label>
-                  <input type="text" class="form-control" name="firstname" placeholder="Enter first name" required>
-                  <div class="valid-feedback">Looks good!</div>
-                  <div class="invalid-feedback">Please enter a valid first name.</div>
-                </div>
-                <div class="form-group col-md-6 col-sm-12">
-                  <label for="lastName">Last Name:</label>
-                  <input type="text" class="form-control" name="lastname" placeholder="Enter last name" required>
-                  <div class="valid-feedback">Looks good!</div>
-                  <div class="invalid-feedback">Please enter a valid last name.</div>
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="form-group col-md-6">
-                  <label for="birthday">Birthday:</label>
-                  <input type="date" class="form-control" name="birthday" id="birthday" required>
-                  <div class="valid-feedback">Great!</div>
-                  <div class="invalid-feedback">Please enter a valid birthday.</div>
-                </div>
-                <div class="form-group col-md-6">
-                  <label for="sex">Sex:</label>
-                  <select class="form-control" name="sex" required>
-                    <option selected disabled value="">Select Sex</option>
-                    <option>Male</option>
-                    <option>Female</option>
-                  </select>
-                  <div class="valid-feedback">Looks good.</div>
-                  <div class="invalid-feedback">Please select a sex.</div>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label for="profilePicture">Profile Picture:</label>
-                <input type="file" class="form-control" name="profile_picture" accept="image/*" required>
-                <div class="valid-feedback">Looks good!</div>
-                <div class="invalid-feedback">Please upload a profile picture.</div>
-            </div>
-      <button type="button" class="btn btn-secondary mt-3" onclick="prevStep()">Previous</button>
-      <button type="button" class="btn btn-primary mt-3" onclick="nextStep()">Next</button>
-    </div>
-    </div>
-    </div>
-
-
-    <!-- Step 3 -->
-    <div class="form-step" id="step-3">
       <div class="card mt-4">
-        <div class="card-header bg-info text-white">Address Information</div>
+        <div class="card-header bg-info text-white">Personal Information</div>
         <div class="card-body">
-          <div class="form-group">
-            <label class="form-label">Region<span class="text-danger"> *</span></label>
-            <select name="user_region" class="form-control form-control-md" id="region"></select>
-            <input type="hidden" class="form-control form-control-md" name="region_text" id="region-text">
-            <div class="valid-feedback">Looks good!</div>
-            <div class="invalid-feedback">Please select a region.</div>
-          </div>
           <div class="form-row">
             <div class="form-group col-md-6">
-              <label class="form-label">Province<span class="text-danger"> *</span></label>
-              <select name="user_province" class="form-control form-control-md" id="province"></select>
-              <input type="hidden" class="form-control form-control-md" name="province_text" id="province-text" required>
+              <label for="TenantFN">First Name:</label>
+              <input type="text" class="form-control" name="TenantFN" placeholder="Enter first name" required>
               <div class="valid-feedback">Looks good!</div>
-              <div class="invalid-feedback">Please select your province.</div>
+              <div class="invalid-feedback">Please enter a valid first name.</div>
             </div>
             <div class="form-group col-md-6">
-              <label class="form-label">City / Municipality<span class="text-danger"> *</span></label>
-              <select name="user_city" class="form-control form-control-md" id="city"></select>
-              <input type="hidden" class="form-control form-control-md" name="city_text" id="city-text" required>
+              <label for="TenantLN">Last Name:</label>
+              <input type="text" class="form-control" name="TenantLN" placeholder="Enter last name" required>
               <div class="valid-feedback">Looks good!</div>
-              <div class="invalid-feedback">Please select your city/municipality.</div>
+              <div class="invalid-feedback">Please enter a valid last name.</div>
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label">Barangay<span class="text-danger"> *</span></label>
-            <select name="user_barangay" class="form-control form-control-md" id="barangay"></select>
-            <input type="hidden" class="form-control form-control-md" name="barangay_text" id="barangay-text" required>
+            <label for="sex">Sex:</label>
+            <select class="form-control" name="sex" required>
+              <option selected disabled value="">Select Sex</option>
+              <option>Male</option>
+              <option>Female</option>
+            </select>
             <div class="valid-feedback">Looks good!</div>
-            <div class="invalid-feedback">Please select your barangay.</div>
+            <div class="invalid-feedback">Please select a sex.</div>
           </div>
           <div class="form-group">
-            <label class="form-label">Street <span class="text-danger"> *</span></label>
-            <input type="text" class="form-control form-control-md" name="user_street" id="street-text" required>
+            <label for="profile_picture">Profile Picture:</label>
+            <input type="file" class="form-control" name="profile_picture" accept="image/*" required>
             <div class="valid-feedback">Looks good!</div>
-            <div class="invalid-feedback">Please select your street.</div>
+            <div class="invalid-feedback">Please upload a profile picture.</div>
           </div>
         </div>
       </div>
       <button type="button" class="btn btn-secondary mt-3" onclick="prevStep()">Previous</button>
-      <button type="submit" name="multisave" class="btn btn-primary mt-3">Sign Up</button>
-      <a class="btn btn-outline-danger mt-3" href="index.php">Go Back</a>
-    </div>
-  </form>
+  <button type="button" class="btn btn-primary mt-3" onclick="nextStep()">Next</button>
 </div>
+
+<!-- Step 3 -->
+<div class="form-step" id="step-3">
+  <div class="card mt-4">
+    <div class="card-header bg-info text-white">Address Information</div>
+    <div class="card-body">
+      <div class="form-group">
+        <label for="Roomno">Room Number:</label>
+        <input type="text" class="form-control" name="Roomno" id="Roomno" placeholder="Enter room number" required>
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">Please enter the room number.</div>
+      </div>
+      <div class="form-group">
+        <label for="floor">Floor:</label>
+        <input type="text" class="form-control" name="floor" id="floor" placeholder="Enter floor" required>
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">Please enter the floor number.</div>
+      </div>
+      <div class="form-group">
+        <label for="numBedrooms">Number of Bedrooms:</label>
+        <input type="number" class="form-control" name="numBedrooms" id="numBedrooms" placeholder="Enter number of bedrooms" required>
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">Please enter the number of bedrooms.</div>
+      </div>
+      <div class="form-group">
+        <label for="numBathrooms">Number of Bathrooms:</label>
+        <input type="number" class="form-control" name="numBathrooms" id="numBathrooms" placeholder="Enter number of bathrooms" required>
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">Please enter the number of bathrooms.</div>
+      </div>
+    </div>
+  </div>
+  <button type="button" class="btn btn-secondary mt-3" onclick="prevStep()">Previous</button>
+  <button type="submit" name="multisave" class="btn btn-primary mt-3">Sign Up</button>
+  <a class="btn btn-outline-danger mt-3" href="index.php">Go Back</a>
+</div>  
 
 <script src="./bootstrap-5.3.3-dist/js/bootstrap.js"></script>
 <!-- Script for Address Selector -->

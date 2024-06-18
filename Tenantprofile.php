@@ -8,7 +8,7 @@ if (empty($_SESSION['username'])) {
 }
 
 if (isset($_POST['delete'])) {
-    $id = $_POST['id'];
+    $id = $_POST['tenant_id'];
     if ($con->delete($id)) {
         header('location:index.php?status=success');
     } else {
@@ -33,24 +33,24 @@ if (isset($_POST['delete'])) {
 </head>
 <body>
 
-<?php include('navbar.php'); ?>
+<?php include('sidebar.php'); ?>
 
 <div class="container my-5">
         <h2 class="text-center">Tenant Profiles</h2>
         <div class="card-container">
+            
             <?php
             $data = $con->view();
             foreach ($data as $rows) {
                 ?>
                 <div class="card">
                     <div class="card-body text-center">
-                        <?php if (!empty($rows['user_profile_picture'])): ?>
+                        <?php if (!empty($rows['tenant_profile_picture'])): ?>
                             <img src="<?php echo htmlspecialchars($rows['user_profile_picture']); ?>" alt="Profile Picture" class="profile-img">
                         <?php else: ?>
                             <img src="path/to/default/profile/pic.jpg" alt="Default Profile Picture" class="profile-img">
                         <?php endif; ?>
                         <h5 class="card-title"><?php echo htmlspecialchars($rows['tenant_firstname']) . ' ' . htmlspecialchars($rows['tenant_lastname']); ?></h5>
-                        <p class="card-text"><strong>Birthday:</strong> <?php echo htmlspecialchars($rows['birthday']); ?></p>
                         <p class="card-text"><strong>Sex:</strong> <?php echo htmlspecialchars($rows['sex']); ?></p>
                         <p class="card-text"><strong>Username:</strong> <?php echo htmlspecialchars($rows['Username']); ?></p>
                         <p class="card-text"><strong>Address:</strong> <?php echo ucwords(htmlspecialchars($rows['address'])); ?></p>

@@ -6,7 +6,7 @@ header('Content-Type: application/json'); // Ensure the content type is set to J
 
 if (isset($_POST['current_password'])) {
     $currentPassword = $_POST['current_password'];
-    $userId = $_SESSION['user_id'];
+    $userId = $_SESSION['tenant_id'];
 
     $con = new database();
     $isValid = $con->validateCurrentPassword($userId, $currentPassword);
