@@ -17,7 +17,7 @@
 
         // Fetch user data
         $data = $con->viewdata($id);
-
+        
         // Handle form submission for updating address
         if (isset($_POST['updateapartment'])) {
             $user_id = $id;

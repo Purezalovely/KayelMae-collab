@@ -4,7 +4,7 @@ $con = new database();
 session_start();
 
 if (empty($_SESSION['username'])) {
-    header('location:login.php');
+    header('location:Adminlogin.php');
 }
 
 if (isset($_POST['delete'])) {

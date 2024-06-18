@@ -15,7 +15,7 @@ if (isset($_POST['multisave'])) {
     $sex = $_POST['sex'];
 
     // Getting the address information
-    $Roomno = $_POST['Roomno'];
+    $Roomno = $_POST['Roo mno'];
     $floor = $_POST['floor'];
     $numBedrooms = $_POST['numBedrooms'];
     $numBathrooms = $_POST['numBathrooms'];

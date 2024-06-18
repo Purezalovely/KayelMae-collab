@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             // Check if the connection is successful
             if ($connection) {
                 // SQL query with JOIN
-                $query = $connection->prepare("SELECT tenants.tenant_id, tenants.Tenant FN, tenants.TenantLN, tenants.sex, tenants.username, tenants.profile_picture, CONCAT(apartment.Roomno,', ', apartment.floor) AS apartment FROM tenants INNER JOIN apartment ON tenants.tenant_id = tenants_apartment.tenant_id WHERE tenants.username LIKE ? OR tenants.tenant_id LIKE ?");
+                $query = $connection->prepare("SELECT users.user_id, users.user_firstname, users.user_lastname, users.user_birthday, users.user_sex, users.user_name, users.user_profile_picture, CONCAT(user_address.city,', ', user_address.province) AS address FROM users INNER JOIN user_address ON users.user_id = user_address.user_id");
                 $query->execute(["%$searchterm%","%$searchterm%"]);
                 $users = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -23,11 +23,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     $html .= '<tr>';
                     $html .= '<td>' . $tenants['tenant_id'] . '</td>';
                     $html .= '<td><img src="' . htmlspecialchars($tenants['profile_picture']) . '" alt="Profile Picture" style="width: 50px; height: 50px; border-radius: 50%;"></td>';
-                    $html .= '<td>' . $tenants['firstname'] . '</td>';
-                    $html .= '<td>' . $tenants['lastname'] . '</td>';
+                    $html .= '<td>' . $tenants['TenantFN'] . '</td>';
+                    $html .= '<td>' . $tenants['TenantLN'] . '</td>';
                     $html .= '<td>' . $tenants['sex'] . '</td>';
                     $html .= '<td>' . $tenants['username'] . '</td>';
-                    $html .= '<td>' . $tenants['address'] . '</td>';
+                    $html .= '<td>' . $tenants['apartment_id'] . '</td>';
                     $html .= '<td>'; // Action column
                     $html .= '<form action="update.php" method="post" style="display: inline;">';
                     $html .= '<input type="hidden" name="id" value="' .$tenants['tenant_id'] . '">';

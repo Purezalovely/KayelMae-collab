@@ -23,11 +23,11 @@ try {
         $html .= '<tr>';
         $html .= '<td>' . $tenants['tenant_id'] . '</td>';
         $html .= '<td><img src="' . htmlspecialchars($tenants['profile_picture']) . '" alt="Profile Picture" style="width: 50px; height: 50px; border-radius: 50%;"></td>';
-        $html .= '<td>' . $tenants['firstname'] . '</td>';
-        $html .= '<td>' . $tenants['lastname'] . '</td>';
+        $html .= '<td>' . $tenants['TenantFN'] . '</td>';
+        $html .= '<td>' . $tenants['TenantLN'] . '</td>';
         $html .= '<td>' . $tenants['sex'] . '</td>';
         $html .= '<td>' . $tenants['username'] . '</td>';
-        $html .= '<td>' . $tenants['address'] . '</td>';
+        $html .= '<td>' . $tenants['apartment_id'] . '</td>';
         $html .= '<td>'; // Action column
         $html .= '<form action="update.php" method="post" style="display: inline;">';
         $html .= '<input type="hidden" name="id" value="' .$tenants['tenant_id'] . '">';
