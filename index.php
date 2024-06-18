@@ -4,17 +4,18 @@ $con = new database();
 session_start();
 
 if (empty($_SESSION['username'])) {
-    header('location:Adminlogin.php');
+    header('location:login.php');
 }
 
 if (isset($_POST['delete'])) {
     $id = $_POST['id'];
-    if ($con->delete($id)) {
+    if ($con->deleteTenant($id)) { // Assuming deleteTenant method is defined in Database class
         header('location:index.php?status=success');
     } else {
         echo "Something went wrong.";
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -57,7 +58,7 @@ if (isset($_POST['delete'])) {
             <?php
 
 $counter = 1;
-            $data = $con->view();
+              $data = $con->view();
             foreach ($data as $rows) {
                 ?>
                 <tr>
@@ -69,10 +70,10 @@ $counter = 1;
                             <img src="path/to/default/profile/pic.jpg" alt="Default Profile Picture" style="width: 50px; height: 50px; border-radius: 50%;">
                         <?php endif; ?>
                     </td>
-                    <td><?php echo $rows['tenant_firstname']; ?></td>
-                    <td><?php echo $rows['tenant_lastname']; ?></td>
+                    <td><?php echo $rows['TenantFN']; ?></td>
+                    <td><?php echo $rows['TenantLN']; ?></td>
                     <td><?php echo $rows['sex']; ?></td>
-                    <td><?php echo $rows['Username']; ?></td>
+                    <td><?php echo $rows['username']; ?></td>
                     <td><?php echo ucwords($rows['apartment_id']); ?></td>
                     <td><?php echo $rows['payment']; ?></td>
                     <td><?php echo $rows['lease_id']; ?></td>
@@ -100,11 +101,7 @@ $counter = 1;
             </tbody>
         </table>
     </div>
-
     </div>
-
-          
-            ?>
             </tbody>
         </table>
     </div>

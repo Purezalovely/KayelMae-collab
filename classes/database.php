@@ -1,4 +1,5 @@
 <?php
+
 class Database {
     private $pdo;
 
@@ -15,6 +16,27 @@ class Database {
             $this->pdo->query("SELECT 1");
         } catch (PDOException $e) {
             die("Connection failed: " . $e->getMessage());
+        }
+    }
+
+    public function view() {
+        try {
+            $stmt = $this->pdo->query("SELECT * FROM tenants");
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    public function admins($username, $password) {
+        $stmt = $this->pdo->prepare("SELECT passwords FROM admins WHERE username = ?");
+        $stmt->execute([$username]);
+        $admins = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($admins && password_verify($password, $admins['passwords'])) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -100,25 +122,13 @@ class Database {
         }
     }
 
-    public function adminSignup($username, $password) {
+    public function signup($username, $password) {
         try {
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $this->pdo->prepare("INSERT INTO admins (Admin_username, Admin_passwords) VALUES (?, ?)");
+            $stmt = $this->pdo->prepare("INSERT INTO admins (username, passwords) VALUES (?, ?)");
             $stmt->execute([$username, $hashedPassword]);
             return true;
         } catch (PDOException $e) {
-            return false;
-        }
-    }
-
-    public function adminLogin($username, $password) {
-        $stmt = $this->pdo->prepare("SELECT Admin_passwords FROM admins WHERE Admin_username = ?");
-        $stmt->execute([$username]);
-        $admin = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($admin && isset($admin['Admin_passwords']) && password_verify($password, $admin['Admin_passwords'])) {
-            return true;
-        } else {
             return false;
         }
     }

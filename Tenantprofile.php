@@ -52,17 +52,17 @@ if (isset($_POST['delete'])) {
                         <?php endif; ?>
                         <h5 class="card-title"><?php echo htmlspecialchars($rows['tenant_firstname']) . ' ' . htmlspecialchars($rows['tenant_lastname']); ?></h5>
                         <p class="card-text"><strong>Sex:</strong> <?php echo htmlspecialchars($rows['sex']); ?></p>
-                        <p class="card-text"><strong>Username:</strong> <?php echo htmlspecialchars($rows['Username']); ?></p>
-                        <p class="card-text"><strong>Address:</strong> <?php echo ucwords(htmlspecialchars($rows['address'])); ?></p>
+                        <p class="card-text"><strong>Username:</strong> <?php echo htmlspecialchars($rows['username']); ?></p>
+                        <p class="card-text"><strong>Apartments:</strong> <?php echo ucwords(htmlspecialchars($rows['apartments'])); ?></p>
                         <p class="card-text"><strong>Payment:</strong> <?php echo htmlspecialchars($rows['payment']); ?></p>
-                        <p class="card-text"><strong>Unit Type:</strong> <?php echo htmlspecialchars($rows['unit_type']); ?></p>
+                        <p class="card-text"><strong>Leases:</strong> <?php echo htmlspecialchars($rows['tenant_id']); ?></p>
                         <p class="card-text"><strong>Age:</strong> <?php echo htmlspecialchars($rows['age']); ?></p>
                         <form action="update.php" method="post" class="d-inline">
-                            <input type="hidden" name="id" value="<?php echo htmlspecialchars($rows['UserID']); ?>">
+                            <input type="hidden" name="id" value="<?php echo htmlspecialchars($rows['tenant_id']); ?>">
                             <button type="submit" class="btn btn-primary btn-sm">Edit</button>
                         </form>
                         <form method="POST" class="d-inline">
-                            <input type="hidden" name="id" value="<?php echo htmlspecialchars($rows['UserID']); ?>">
+                            <input type="hidden" name="id" value="<?php echo htmlspecialchars($rows['tenant_id']); ?>">
                             <input type="submit" name="delete" class="btn btn-danger btn-sm" value="Delete" onclick="return confirm('Are you sure you want to delete this user?')">
                         </form>
                     </div>
