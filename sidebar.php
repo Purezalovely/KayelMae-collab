@@ -6,7 +6,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
   <div class="sidebar-header text-white p-3">
     <h3>Welcome, <?php echo $_SESSION['username']; ?>!</h3>
   </div>
-
+  
   <ul class="nav flex-column">
     <li class="nav-item">
       <a class="nav-link text-white <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>" href="index.php"> Tenant List</a>
